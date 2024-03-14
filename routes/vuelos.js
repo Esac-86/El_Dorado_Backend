@@ -51,16 +51,21 @@ router.get('/consultar/:codVuelo', async (req, res) => {
 
 router.delete('/eliminar/:codVuelo', async (req, res) => {
   const codVuelo = req.params.codVuelo;
-  const query = 'DELETE FROM vuelo WHERE codvuelo = ?';
 
   try {
-    await connection.execute(query, [codVuelo]);
-    res.status(200).json({ message: 'Vuelo eliminado exitosamente.' });
+    // Eliminar los pasajeros asociados al vuelo
+    await connection.execute('DELETE FROM pasajero WHERE codvuelo = ?', [codVuelo]);
+
+    // Ahora que los pasajeros han sido eliminados, eliminar el vuelo
+    await connection.execute('DELETE FROM vuelo WHERE codvuelo = ?', [codVuelo]);
+
+    res.status(200).json({ message: 'Vuelo y sus pasajeros eliminados exitosamente.' });
   } catch (error) {
-    console.error('Error al eliminar vuelo:', error);
-    res.status(500).json({ message: 'Error interno del servidor al eliminar vuelo.' });
+    console.error('Error al eliminar vuelo y pasajeros:', error);
+    res.status(500).json({ message: 'Error interno del servidor al eliminar vuelo y pasajeros.' });
   }
 });
+
 
 
 router.put('/editar/:codVuelo', async (req, res) => {
