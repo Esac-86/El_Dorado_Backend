@@ -3,18 +3,18 @@ const router = express.Router();
 const connection = require('../connection');
 
 router.post('/crear', async (req, res) => {
-    const { id, nombres, apellidos, email, telefono, codvuelo, foto } = req.body;
+    const { id, nombres, apellidos, email, telefono, codvuelo } = req.body;
 
     if (!id || !nombres || !apellidos || !email || !telefono || !codvuelo) {
         return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
     }
 
-    const query = 'INSERT INTO pasajero (id, nombres, apellidos, email, telefono, codvuelo, foto) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    const values = [id, nombres, apellidos, email, telefono, codvuelo, foto];
+    const query = 'INSERT INTO pasajero (id, nombres, apellidos, email, telefono, codvuelo) VALUES (?, ?, ?, ?, ?, ?)';
+    const values = [id, nombres, apellidos, email, telefono, codvuelo];
 
     try {
         await connection.execute(query, values);
-        res.status(201).json({ message: 'Pasajero creado exitosamente', nuevoPasajero: { id, nombres, apellidos, email, telefono, codvuelo, foto } });
+        res.status(201).json({ message: 'Pasajero creado exitosamente', nuevoPasajero: { id, nombres, apellidos, email, telefono, codvuelo } });
     } catch (error) {
         console.error('Error al crear pasajero:', error);
         res.status(500).json({ message: 'Error interno del servidor al crear pasajero.' });
