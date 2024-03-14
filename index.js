@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 app.use('/dorado', routes);
 
 app.use((req, res) => {
-  res.status(404).json({ message: 'Ruta no encontrada.' });
+  res.status(404).json({ message: 'Backend El_Dorado no encontró la ruta esperada.' });
 });
 
 
