@@ -5,7 +5,7 @@ const connection = require('../connection');
 router.post('/crear', async (req, res) => {
     const { id, nombres, apellidos, email, telefono, codvuelo, foto } = req.body;
 
-    if (!id || !nombres || !apellidos || !email || !telefono || !codvuelo || !foto) {
+    if (!id || !nombres || !apellidos || !email || !telefono || !codvuelo) {
         return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
     }
 
@@ -20,6 +20,7 @@ router.post('/crear', async (req, res) => {
         res.status(500).json({ message: 'Error interno del servidor al crear pasajero.' });
     }
 });
+
 
 router.get('/consultar/:codvuelo', async (req, res) => {
     const codVuelo = req.params.codvuelo;
