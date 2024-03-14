@@ -9,17 +9,31 @@ router.post('/crear', async (req, res) => {
         return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
     }
 
-    const query = 'INSERT INTO pasajero (id, nombres, apellidos, email, telefono, codvuelo) VALUES (?, ?, ?, ?, ?, ?)';
-    const values = [id, nombres, apellidos, email, telefono, codvuelo];
+    // Verificar si la ID ya existe en la base de datos
+    const checkQuery = 'SELECT COUNT(*) AS count FROM pasajero WHERE id = ?';
+    const checkValues = [id];
 
     try {
-        await connection.execute(query, values);
+        const [rows] = await connection.execute(checkQuery, checkValues);
+        const count = rows[0].count;
+
+        if (count > 0) {
+            // Si la ID ya existe, devolver un mensaje de error
+            return res.status(400).json({ message: 'La ID del pasajero ya está en uso.' });
+        }
+
+        // Si la ID no existe, proceder con la inserción del nuevo pasajero
+        const insertQuery = 'INSERT INTO pasajero (id, nombres, apellidos, email, telefono, codvuelo) VALUES (?, ?, ?, ?, ?, ?)';
+        const insertValues = [id, nombres, apellidos, email, telefono, codvuelo];
+
+        await connection.execute(insertQuery, insertValues);
         res.status(201).json({ message: 'Pasajero creado exitosamente', nuevoPasajero: { id, nombres, apellidos, email, telefono, codvuelo } });
     } catch (error) {
         console.error('Error al crear pasajero:', error);
         res.status(500).json({ message: 'Error interno del servidor al crear pasajero.' });
     }
 });
+
 
 
 router.get('/consultar/:codvuelo', async (req, res) => {
