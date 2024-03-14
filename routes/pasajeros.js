@@ -54,7 +54,7 @@ router.get('/consultar/:codvuelo', async (req, res) => {
 });
 
 
-router.delete('/eliminar/:id', async (req, res) => {
+router.delete('/pasajeros/eliminar/:id', async (req, res) => {
     const pasajeroId = req.params.id;
 
     try {
@@ -70,5 +70,23 @@ router.delete('/eliminar/:id', async (req, res) => {
         res.status(500).json({ message: 'Error interno del servidor al eliminar pasajero.' });
     }
 });
+
+router.delete('/pasajeros/eliminarPorCodigoVuelo/:codvuelo', async (req, res) => {
+    const codigoVuelo = req.params.codvuelo;
+
+    try {
+        const [result] = await connection.execute('DELETE FROM pasajero WHERE codvuelo = ?', [codigoVuelo]);
+
+        if (result.affectedRows > 0) {
+            res.status(204).send();
+        } else {
+            res.status(404).json({ message: 'No se encontraron pasajeros para el código de vuelo especificado.' });
+        }
+    } catch (error) {
+        console.error('Error al eliminar pasajeros por código de vuelo:', error);
+        res.status(500).json({ message: 'Error interno del servidor al eliminar pasajeros por código de vuelo.' });
+    }
+});
+
 
 module.exports = router;
