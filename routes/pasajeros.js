@@ -9,20 +9,14 @@ router.post('/crear', async (req, res) => {
         return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
     }
 
-    // Verificar si la ID ya existe en la base de datos
-    const checkQuery = 'SELECT COUNT(*) AS count FROM pasajero WHERE id = ?';
-    const checkValues = [id];
-
     try {
-        const [rows] = await connection.execute(checkQuery, checkValues);
+        const [rows] = await connection.execute('SELECT COUNT(*) AS count FROM pasajero WHERE id = ?', [id]);
         const count = rows[0].count;
 
         if (count > 0) {
-            // Si la ID ya existe, devolver un mensaje de error
             return res.status(400).json({ message: 'La ID del pasajero ya está en uso.' });
         }
 
-        // Si la ID no existe, proceder con la inserción del nuevo pasajero
         const insertQuery = 'INSERT INTO pasajero (id, nombres, apellidos, email, telefono, codvuelo) VALUES (?, ?, ?, ?, ?, ?)';
         const insertValues = [id, nombres, apellidos, email, telefono, codvuelo];
 
@@ -34,8 +28,6 @@ router.post('/crear', async (req, res) => {
     }
 });
 
-
-
 router.get('/consultar/:codvuelo', async (req, res) => {
     const codVuelo = req.params.codvuelo;
 
@@ -43,7 +35,7 @@ router.get('/consultar/:codvuelo', async (req, res) => {
         const [result] = await connection.execute('SELECT * FROM pasajero WHERE codvuelo = ?', [codVuelo]);
 
         if (result.length > 0) {
-            res.status(200).json({ pasajeros: result }); // Cambio aquí: "pasajero" a "pasajeros"
+            res.status(200).json({ pasajeros: result });
         } else {
             res.status(404).json({ message: 'Recurso no encontrado.' });
         }
@@ -53,8 +45,7 @@ router.get('/consultar/:codvuelo', async (req, res) => {
     }
 });
 
-
-router.delete('/pasajeros/eliminar/:id', async (req, res) => {
+router.delete('/eliminar/:id', async (req, res) => {
     const pasajeroId = req.params.id;
 
     try {
@@ -71,7 +62,7 @@ router.delete('/pasajeros/eliminar/:id', async (req, res) => {
     }
 });
 
-router.delete('/pasajeros/eliminarPorCodigoVuelo/:codvuelo', async (req, res) => {
+router.delete('/eliminarPorCodigoVuelo/:codvuelo', async (req, res) => {
     const codigoVuelo = req.params.codvuelo;
 
     try {
@@ -87,6 +78,5 @@ router.delete('/pasajeros/eliminarPorCodigoVuelo/:codvuelo', async (req, res) =>
         res.status(500).json({ message: 'Error interno del servidor al eliminar pasajeros por código de vuelo.' });
     }
 });
-
 
 module.exports = router;
